@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * This file is part of aakb/itstyr.
+ *
+ * (c) 2018–2019 ITK Development
+ *
+ * This source file is subject to the MIT license.
+ */
+
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -177,7 +185,8 @@ class Theme
     /**
      * Virtual.
      */
-    public function getOrderedCategories() {
+    public function getOrderedCategories()
+    {
         $list = [];
 
         $themeCategories = $this->themeCategories;
@@ -186,7 +195,7 @@ class Theme
             return (int) $first->getSortOrder() < (int) $second->getSortOrder() ? 1 : -1;
         });
 
-        foreach($iterator as $i => $item) {
+        foreach ($iterator as $i => $item) {
             $list[] = $item->getCategory();
         }
 

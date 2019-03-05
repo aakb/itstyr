@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * This file is part of aakb/itstyr.
+ *
+ * (c) 2018–2019 ITK Development
+ *
+ * This source file is subject to the MIT license.
+ */
+
 namespace App;
 
 use AlterPHP\EasyAdminExtensionBundle\EasyAdminExtensionBundle;
@@ -10,7 +18,6 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Kernel as BaseKernel;
 use Symfony\Component\Routing\RouteCollectionBuilder;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
-
 
 class Kernel extends BaseKernel implements CompilerPassInterface
 {
@@ -74,7 +81,7 @@ class Kernel extends BaseKernel implements CompilerPassInterface
         $twigLoaderFilesystemDefinition->addMethodCall('prependPath', [$easyAdminExtensionTwigPath, 'EasyAdmin']);
 
         $nativeEasyAdminBundleRefl = new \ReflectionClass(EasyAdminExtensionBundle::class);
-        $nativeEasyAdminBundlePath = dirname($nativeEasyAdminBundleRefl->getFileName());
+        $nativeEasyAdminBundlePath = \dirname($nativeEasyAdminBundleRefl->getFileName());
         $nativeEasyAdminTwigPath = $nativeEasyAdminBundlePath.'/Resources/views';
         // Defines a namespace from native EasyAdmin templates
         $twigLoaderFilesystemDefinition->addMethodCall('addPath', [$nativeEasyAdminTwigPath, 'BaseEasyAdminExtension']);

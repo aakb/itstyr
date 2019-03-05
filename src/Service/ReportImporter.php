@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * This file is part of aakb/itstyr.
+ *
+ * (c) 2018–2019 ITK Development
+ *
+ * This source file is subject to the MIT license.
+ */
+
 namespace App\Service;
 
 use App\Entity\Report;
@@ -14,7 +22,7 @@ class ReportImporter extends BaseImporter
         $xml = simplexml_load_file($src);
 
         foreach ($xml->getDocNamespaces() as $strPrefix => $strNamespace) {
-            $strPrefix = "sys";
+            $strPrefix = 'sys';
             $xml->registerXPathNamespace($strPrefix, $strNamespace);
         }
 
@@ -46,10 +54,10 @@ class ReportImporter extends BaseImporter
             $report->setSysUpdated($this->convertDate($entry->updated));
             $report->setSysTitle($this->sanitizeText($entry->title));
 
-            $properties = $entry->content->children('m', TRUE)->children('d', TRUE);
+            $properties = $entry->content->children('m', true)->children('d', true);
 
             // Set link to Anmeldelsesportalen.
-            $report->setSysLink($systemURL . $this->sanitizeText($properties->Sti) . '/DispForm.aspx?ID=' . $this->sanitizeText($properties->Id));
+            $report->setSysLink($systemURL.$this->sanitizeText($properties->Sti).'/DispForm.aspx?ID='.$this->sanitizeText($properties->Id));
 
             // Set properties 1:1
             $report->setSysInternalId($this->sanitizeText($properties->Id));
@@ -89,13 +97,13 @@ class ReportImporter extends BaseImporter
             $sysSystemOwner = '';
             $content = $entry->xpath('sys:link[@title="SystemejerProjektejer"]//sys:entry/sys:content');
             if (\count($content) > 0) {
-              $systemOwner = $content[0]->children('m', TRUE)->children('d', TRUE);
-              $sysSystemOwner = (string)$systemOwner->Navn;
+                $systemOwner = $content[0]->children('m', true)->children('d', true);
+                $sysSystemOwner = (string) $systemOwner->Navn;
             }
             $report->setSysSystemOwner($sysSystemOwner);
 
             // Set group and subGroup.
-            if (!is_null($report->getSysOwner())) {
+            if (null !== $report->getSysOwner()) {
                 $e = $report->getSysOwner();
                 $e = str_replace('–', '-', $e);
                 $extract = explode('-', $e, 2);
@@ -107,7 +115,7 @@ class ReportImporter extends BaseImporter
                     ['name' => $groupName]
                 );
 
-                if ($findGroup && is_null($report->getGroup())) {
+                if ($findGroup && null === $report->getGroup()) {
                     $report->setGroup($findGroup);
                 }
 

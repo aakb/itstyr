@@ -68,3 +68,19 @@ https://symfony.com/doc/current/setup/web_server_configuration.html
 bin/console itstyr:import:system PATH
 bin/console itstyr:import:report PATH
 ```
+
+## Coding standards
+
+This project follows some coding standards.
+
+To check the code, run
+
+```sh
+docker-compose exec phpfpm composer check-coding-standards
+```
+
+To apply the coding standards, run
+
+```sh
+docker-compose exec phpfpm composer apply-coding-standards
+```

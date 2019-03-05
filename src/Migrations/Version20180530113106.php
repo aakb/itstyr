@@ -1,4 +1,14 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
+/*
+ * This file is part of aakb/itstyr.
+ *
+ * (c) 2018–2019 ITK Development
+ *
+ * This source file is subject to the MIT license.
+ */
 
 namespace DoctrineMigrations;
 
@@ -10,10 +20,10 @@ use Doctrine\DBAL\Schema\Schema;
  */
 final class Version20180530113106 extends AbstractMigration
 {
-    public function up(Schema $schema) : void
+    public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('ALTER TABLE theme_category DROP FOREIGN KEY FK_A4720BB659027487');
         $this->addSql('ALTER TABLE theme_category DROP FOREIGN KEY FK_A4720BB612469DE2');
@@ -23,10 +33,10 @@ final class Version20180530113106 extends AbstractMigration
         $this->addSql('ALTER TABLE theme_category ADD CONSTRAINT FK_A4720BB612469DE2 FOREIGN KEY (category_id) REFERENCES category (id)');
     }
 
-    public function down(Schema $schema) : void
+    public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('ALTER TABLE theme_category MODIFY id INT NOT NULL');
         $this->addSql('ALTER TABLE theme_category DROP FOREIGN KEY FK_A4720BB659027487');

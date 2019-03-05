@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * This file is part of aakb/itstyr.
+ *
+ * (c) 2018–2019 ITK Development
+ *
+ * This source file is subject to the MIT license.
+ */
+
 namespace App\Command;
 
 use App\Repository\GroupRepository;
@@ -45,7 +53,7 @@ class AssignGroupsCommand extends Command
         $systems = $this->systemRepository->findAll();
 
         foreach ($reports as $report) {
-            if (!is_null($report->getSysOwner())) {
+            if (null !== $report->getSysOwner()) {
                 $e = $report->getSysOwner();
                 $e = str_replace('–', '-', $e);
                 $extract = explode('-', $e, 2);
@@ -58,28 +66,27 @@ class AssignGroupsCommand extends Command
                 );
 
                 if ($findGroup) {
-                    if (is_null($report->getGroup())) {
+                    if (null === $report->getGroup()) {
                         $report->setGroup($findGroup);
                     }
 
-                    if (is_null($report->getSysOwnerSub())) {
+                    if (null === $report->getSysOwnerSub()) {
                         $report->setSysOwnerSub($subGroupName);
                     }
 
                     $output->writeln('"'.$report->getName().'" set group "'.$groupName.'" and subGroup: "'.$subGroupName.'"');
-                }
-                else {
-                    $output->writeln($groupName . " not found, ignored.");
+                } else {
+                    $output->writeln($groupName.' not found, ignored.');
                 }
             } else {
                 $output->writeln(
-                    $report->getName()." - ".$report->getSysOwner().' - ignored'
+                    $report->getName().' - '.$report->getSysOwner().' - ignored'
                 );
             }
         }
 
         foreach ($systems as $system) {
-            if (!is_null($system->getSysOwner())) {
+            if (null !== $system->getSysOwner()) {
                 $e = $system->getSysOwner();
                 $e = str_replace('–', '-', $e);
                 $extract = explode('-', $e, 2);
@@ -92,22 +99,21 @@ class AssignGroupsCommand extends Command
                 );
 
                 if ($findGroup) {
-                    if (is_null($system->getGroup())) {
+                    if (null === $system->getGroup()) {
                         $system->setGroup($findGroup);
                     }
 
-                    if (is_null($system->getSysOwnerSub())) {
+                    if (null === $system->getSysOwnerSub()) {
                         $system->setSysOwnerSub($subGroupName);
                     }
 
                     $output->writeln('"'.$system->getName().'" set group "'.$groupName.'" and subGroup: "'.$subGroupName.'"');
-                }
-                else {
-                    $output->writeln($groupName . " not found, ignored.");
+                } else {
+                    $output->writeln($groupName.' not found, ignored.');
                 }
             } else {
                 $output->writeln(
-                    $system->getName()." - ".$system->getSysOwner().' - ignored'
+                    $system->getName().' - '.$system->getSysOwner().' - ignored'
                 );
             }
         }

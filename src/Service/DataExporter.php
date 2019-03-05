@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * This file is part of aakb/itstyr.
+ *
+ * (c) 2018–2019 ITK Development
+ *
+ * This source file is subject to the MIT license.
+ */
+
 namespace App\Service;
 
 use App\DBAL\Types\SmileyType;
@@ -9,7 +17,6 @@ use App\Repository\ReportRepository;
 use App\Repository\SystemRepository;
 use App\Repository\ThemeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
-
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
@@ -26,10 +33,11 @@ class DataExporter
     /**
      * DataExporter constructor.
      *
-     * @param \App\Repository\ReportRepository $reportRepository
-     * @param \App\Repository\SystemRepository $systemRepository
-     * @param \App\Repository\ThemeRepository $themeRepository
+     * @param \App\Repository\ReportRepository  $reportRepository
+     * @param \App\Repository\SystemRepository  $systemRepository
+     * @param \App\Repository\ThemeRepository   $themeRepository
      * @param \Psr\Container\ContainerInterface $container
+     *
      * @throws \Exception
      */
     public function __construct(
@@ -53,13 +61,12 @@ class DataExporter
     ) {
         $spreadsheet = new Spreadsheet();
 
-        $filename = $typeString.'-'.date("Y-m-d-H_i_s");
+        $filename = $typeString.'-'.date('Y-m-d-H_i_s');
 
         if (!$splitIntoSubOwners) {
             $sheet = $spreadsheet->getActiveSheet();
-            $this->writeSheet($spreadsheet, $sheet, 0 ,$type, $entities);
-        }
-        else {
+            $this->writeSheet($spreadsheet, $sheet, 0, $type, $entities);
+        } else {
             $subOwnerEntities = [];
 
             foreach ($entities as $entity) {
@@ -73,15 +80,14 @@ class DataExporter
                 $workSheet = null;
                 if ($sheetNr > 0) {
                     $workSheet = $spreadsheet->addSheet(new Worksheet());
-                }
-                else {
+                } else {
                     $workSheet = $spreadsheet->getActiveSheet();
                 }
                 $workSheet->setTitle($key ?: 'No subowner');
 
                 $this->writeSheet($spreadsheet, $workSheet, $sheetNr, $type, $entities);
 
-                $sheetNr++;
+                ++$sheetNr;
             }
         }
 
@@ -97,7 +103,8 @@ class DataExporter
         exit;
     }
 
-    private function writeSheet($spreadsheet, Worksheet $sheet, $page, $type, $entities) {
+    private function writeSheet($spreadsheet, Worksheet $sheet, $page, $type, $entities)
+    {
         $spreadsheet->setActiveSheetIndex($page);
 
         $themesThatApply = [];
@@ -105,9 +112,9 @@ class DataExporter
         // Find themes that is attached to the entities.
         $themes = $this->themeRepository->findAll();
         foreach ($themes as $theme) {
-            if ($type == Report::class) {
-                if (count($theme->getReports()) > 0 &&
-                    count(array_intersect(
+            if (Report::class === $type) {
+                if (\count($theme->getReports()) > 0 &&
+                    \count(array_intersect(
                         $theme->getReports()->toArray(),
                         $entities
                     )) > 0
@@ -115,9 +122,9 @@ class DataExporter
                     $themesThatApply[] = $theme;
                 }
             } else {
-                if ($type == System::class) {
-                    if (count($theme->getSystems()) > 0 &&
-                        count(array_intersect(
+                if (System::class === $type) {
+                    if (\count($theme->getSystems()) > 0 &&
+                        \count(array_intersect(
                             $theme->getSystems()->toArray(),
                             $entities
                         )) > 0
@@ -147,7 +154,7 @@ class DataExporter
             $categoryRow[] = $category->getName();
             $setCategory = true;
 
-            if (count($category->getQuestions()) === 0) {
+            if (0 === \count($category->getQuestions())) {
                 $answerColumns[] = '';
             } else {
                 foreach ($category->getQuestions() as $question) {
@@ -176,7 +183,7 @@ class DataExporter
         $calculationColumnHeadings = [
             'Sum af svar',
             'Antal spørgsmål',
-            'Resultat %'
+            'Resultat %',
         ];
 
         $headings = array_merge(
@@ -195,16 +202,16 @@ class DataExporter
             ],
         ];
 
-        Coordinate::stringFromColumnIndex(count($categoryRow) + 1);
+        Coordinate::stringFromColumnIndex(\count($categoryRow) + 1);
 
-        $sheet->getStyle('A1:'. Coordinate::stringFromColumnIndex(count($categoryRow) + 1) . '1')->applyFromArray($styleArray)->getAlignment()->setTextRotation(45);
-        $sheet->getStyle('A2:'. Coordinate::stringFromColumnIndex(count($headings) + 1) . '2')->applyFromArray($styleArray)->getAlignment()->setTextRotation(45);
+        $sheet->getStyle('A1:'.Coordinate::stringFromColumnIndex(\count($categoryRow) + 1).'1')->applyFromArray($styleArray)->getAlignment()->setTextRotation(45);
+        $sheet->getStyle('A2:'.Coordinate::stringFromColumnIndex(\count($headings) + 1).'2')->applyFromArray($styleArray)->getAlignment()->setTextRotation(45);
 
         $rowNr = 2;
 
         foreach ($entities as $entity) {
-            $rowNr++;
-            $columnNr = count($metaDataColumnHeadings);
+            ++$rowNr;
+            $columnNr = \count($metaDataColumnHeadings);
 
             $answers = $entity->getAnswers();
 
@@ -216,25 +223,25 @@ class DataExporter
                 $categoryApplies = $this->categoryAppliesToEntity($entity, $category);
 
                 foreach ($category->getQuestions() as $question) {
-                    $columnNr++;
+                    ++$columnNr;
 
                     $value = '';
 
                     if ($categoryApplies) {
                         foreach ($answers as $answer) {
-                            if ($answer->getQuestion()->getId() == $question->getId(
-                                )) {
-                                if ($answer->getSmiley() == SmileyType::BLUE ||
-                                    $answer->getSmiley() == SmileyType::GREEN) {
+                            if ($answer->getQuestion()->getId() === $question->getId(
+                            )) {
+                                if (SmileyType::BLUE === $answer->getSmiley() ||
+                                    SmileyType::GREEN === $answer->getSmiley()) {
                                     $value = 2;
                                 } else {
-                                    if ($answer->getSmiley(
-                                        ) == SmileyType::YELLOW) {
+                                    if (SmileyType::YELLOW === $answer->getSmiley(
+                                    )) {
                                         $value = 1;
                                     } else {
-                                        if ($answer->getSmiley(
-                                            ) == SmileyType::RED ||
-                                            is_null($answer->getSmiley())
+                                        if (SmileyType::RED === $answer->getSmiley(
+                                        ) ||
+                                            null === $answer->getSmiley()
                                         ) {
                                             $value = 0;
                                         }
@@ -245,11 +252,11 @@ class DataExporter
                             }
                         }
 
-                        if ($value == '') {
+                        if ('' === $value) {
                             $value = 0;
                         }
 
-                        $cellsThatApply++;
+                        ++$cellsThatApply;
                     }
 
                     $questionColumns[] = $value;
@@ -258,21 +265,19 @@ class DataExporter
 
             $calculationColumns = [];
 
-
-
-            if (count($metaDataColumnHeadings) < $columnNr - 1) {
-                $range = $this->getColumnLetter(count($metaDataColumnHeadings)) . $rowNr . ':' .
-                    $this->getColumnLetter($columnNr - 1) . $rowNr;
+            if (\count($metaDataColumnHeadings) < $columnNr - 1) {
+                $range = $this->getColumnLetter(\count($metaDataColumnHeadings)).$rowNr.':'.
+                    $this->getColumnLetter($columnNr - 1).$rowNr;
 
                 $calculationColumns = [
-                    '=SUM(' . $range . ')',
+                    '=SUM('.$range.')',
                     '=COUNTIF('.$range.', 0)+COUNTIF('.$range.',1)+COUNTIF('.$range.',2)',
-                    '=((' . $this->getColumnLetter($columnNr) . $rowNr . ' / 2)/' . $this->getColumnLetter($columnNr + 1) . $rowNr . ')* 100'
+                    '=(('.$this->getColumnLetter($columnNr).$rowNr.' / 2)/'.$this->getColumnLetter($columnNr + 1).$rowNr.')* 100',
                 ];
             }
 
             foreach (array_merge(
-                         [
+                [
                              $entity->getSysInternalId(),
                              $entity->getSysTitle(),
                              $entity->getSysStatus(),
@@ -280,9 +285,9 @@ class DataExporter
                              $entity->getSysOwnerSub(),
                              $entity->getTheme(),
                          ],
-                         $questionColumns,
-                         $calculationColumns
-                     ) as $key => $cell) {
+                $questionColumns,
+                $calculationColumns
+            ) as $key => $cell) {
                 $sheet->setCellValueByColumnAndRow($key + 1, $rowNr, $cell);
             }
         }
@@ -290,23 +295,23 @@ class DataExporter
         // Count the number of questions.
         $nrOfQuestions = 0;
         foreach ($categories as $category) {
-            $nrOfQuestions = $nrOfQuestions + count($category->getQuestions());
+            $nrOfQuestions = $nrOfQuestions + \count($category->getQuestions());
         }
 
         // Add bottom summations if questions have been set for the given entities.
         if ($nrOfQuestions > 0) {
-            $columnRange = range(count($metaDataColumnHeadings) + 1, count($metaDataColumnHeadings) + 1 + $nrOfQuestions);
-            $rowNr = 2 + count($entities) + 2;
+            $columnRange = range(\count($metaDataColumnHeadings) + 1, \count($metaDataColumnHeadings) + 1 + $nrOfQuestions);
+            $rowNr = 2 + \count($entities) + 2;
 
             $sheet->setCellValueByColumnAndRow(1, $rowNr, $calculationColumnHeadings[0]);
-            $sheet->setCellValueByColumnAndRow(1, $rowNr+1, $calculationColumnHeadings[1]);
-            $sheet->setCellValueByColumnAndRow(1, $rowNr+2, $calculationColumnHeadings[2]);
+            $sheet->setCellValueByColumnAndRow(1, $rowNr + 1, $calculationColumnHeadings[1]);
+            $sheet->setCellValueByColumnAndRow(1, $rowNr + 2, $calculationColumnHeadings[2]);
 
             foreach ($columnRange as $column) {
-                $range = Coordinate::stringFromColumnIndex($column) . 3 . ':' . Coordinate::stringFromColumnIndex($column) . ($rowNr - 2);
-                $sheet->setCellValueByColumnAndRow($column, $rowNr, '=SUM(' . $range . ')');
+                $range = Coordinate::stringFromColumnIndex($column). 3 .':'.Coordinate::stringFromColumnIndex($column).($rowNr - 2);
+                $sheet->setCellValueByColumnAndRow($column, $rowNr, '=SUM('.$range.')');
                 $sheet->setCellValueByColumnAndRow($column, $rowNr + 1, '=COUNTIF('.$range.', 0)+COUNTIF('.$range.',1)+COUNTIF('.$range.',2)');
-                $sheet->setCellValueByColumnAndRow($column, $rowNr + 2, '=((' .Coordinate::stringFromColumnIndex($column).($rowNr). ' / 2)/' .Coordinate::stringFromColumnIndex($column).($rowNr+1). ')* 100');
+                $sheet->setCellValueByColumnAndRow($column, $rowNr + 2, '=(('.Coordinate::stringFromColumnIndex($column).($rowNr).' / 2)/'.Coordinate::stringFromColumnIndex($column).($rowNr + 1).')* 100');
             }
         }
 
@@ -314,30 +319,33 @@ class DataExporter
         $drawing = new \PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
         $drawing->setName('Values');
         $drawing->setDescription('Values');
-        $drawing->setPath($this->basePath . '/public/excel_values.jpg');
-        $drawing->setCoordinates('A'. ($rowNr + 4));
+        $drawing->setPath($this->basePath.'/public/excel_values.jpg');
+        $drawing->setCoordinates('A'.($rowNr + 4));
         $drawing->setWorksheet($sheet);
     }
 
     /**
-     * Test if a category applies to an entity
+     * Test if a category applies to an entity.
      *
      * @param $entity
      * @param $category
+     *
      * @return bool
      */
-    private function categoryAppliesToEntity($entity, $category) {
+    private function categoryAppliesToEntity($entity, $category)
+    {
         $theme = $entity->getTheme();
 
-        if (is_null($theme)) {
+        if (null === $theme) {
             return false;
         }
 
         foreach ($theme->getThemeCategories() as $themeCategory) {
-            if ($themeCategory->getCategory() == $category) {
+            if ($themeCategory->getCategory() === $category) {
                 return true;
             }
         }
+
         return false;
     }
 
@@ -345,23 +353,25 @@ class DataExporter
      * Get Excel column letter.
      *
      * @param $columnNr
+     *
      * @return string
      */
-    private function getColumnLetter($columnNr) {
+    private function getColumnLetter($columnNr)
+    {
         $res = '';
 
-        $range = range('A','Z');
-        $countRange = count($range);
+        $range = range('A', 'Z');
+        $countRange = \count($range);
 
         if ($columnNr > $countRange) {
-            $res = $range[intval($columnNr / $countRange) - 1];
+            $res = $range[(int) ($columnNr / $countRange) - 1];
         }
 
         $p = $columnNr % $countRange;
 
         $lastLetter = $range[$p];
 
-        return $res . $lastLetter;
+        return $res.$lastLetter;
     }
 
     /**
@@ -375,8 +385,7 @@ class DataExporter
 
         if (isset($groupId)) {
             $entities = $this->reportRepository->findBy(['group' => $groupId, 'sysStatus' => 'Aktiv']);
-        }
-        else {
+        } else {
             $entities = $this->reportRepository->findAll();
         }
 
@@ -402,9 +411,8 @@ class DataExporter
             ->andWhere('s.sysStatus != \'Systemet bruges ikke længere\'')
             ->getQuery()->getResult();
 
-            //$entities = $this->systemRepository->findBy(['group' => $groupId, 'sysStatus' => 'Systemet bruges ikke længere']);
-        }
-        else {
+        //$entities = $this->systemRepository->findBy(['group' => $groupId, 'sysStatus' => 'Systemet bruges ikke længere']);
+        } else {
             $entities = $this->systemRepository->findAll();
         }
 

@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * This file is part of aakb/itstyr.
+ *
+ * (c) 2018–2019 ITK Development
+ *
+ * This source file is subject to the MIT license.
+ */
+
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -134,11 +142,12 @@ class Category
     /**
      * Virtual.
      */
-    public function getThemes() {
+    public function getThemes()
+    {
         $list = [];
         $iterator = $this->themeCategories->getIterator();
 
-        foreach($iterator as $i => $item) {
+        foreach ($iterator as $i => $item) {
             $list[$item->getTheme()->getId()] = $item->getTheme();
         }
 

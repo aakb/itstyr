@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * This file is part of aakb/itstyr.
+ *
+ * (c) 2018–2019 ITK Development
+ *
+ * This source file is subject to the MIT license.
+ */
+
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -77,9 +85,9 @@ class ThemeCategory
     public function __toString()
     {
         if (isset($this->category)) {
-            return $this->sortOrder . ': ' . $this->category->getName();
+            return $this->sortOrder.': '.$this->category->getName();
         }
 
-        return "".$this->id;
+        return ''.$this->id;
     }
 }

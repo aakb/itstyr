@@ -1,18 +1,21 @@
 <?php
 
+/*
+ * This file is part of aakb/itstyr.
+ *
+ * (c) 2018–2019 ITK Development
+ *
+ * This source file is subject to the MIT license.
+ */
+
 namespace App\Controller;
 
 use App\Service\DataExporter;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
-
 
 class ExportController extends Controller
 {
@@ -48,12 +51,12 @@ class ExportController extends Controller
         }
 
         $form = $this->createFormBuilder()
-            ->add('entity', ChoiceType::class, array('label' => 'Entitet', 'choices' => [
+            ->add('entity', ChoiceType::class, ['label' => 'Entitet', 'choices' => [
                 'report' => 'report',
                 'system' => 'system',
-            ]))
-            ->add('group', ChoiceType::class, array('label' => 'Gruppe', 'choices' => $choices))
-            ->add('submit', SubmitType::class, array('label' => 'Hent'))
+            ]])
+            ->add('group', ChoiceType::class, ['label' => 'Gruppe', 'choices' => $choices])
+            ->add('submit', SubmitType::class, ['label' => 'Hent'])
             ->getForm();
 
         $form->handleRequest($request);
@@ -63,10 +66,9 @@ class ExportController extends Controller
             $selectedGroupId = $data['group'];
             $selectedEntity = $data['entity'];
 
-            if ($selectedEntity == 'report') {
+            if ('report' === $selectedEntity) {
                 return $dataExporter->exportReport($selectedGroupId, true);
-            }
-            else if ($selectedEntity == 'system') {
+            } elseif ('system' === $selectedEntity) {
                 return $dataExporter->exportSystem($selectedGroupId, true);
             }
         }

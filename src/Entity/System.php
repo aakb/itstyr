@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * This file is part of aakb/itstyr.
+ *
+ * (c) 2018–2019 ITK Development
+ *
+ * This source file is subject to the MIT license.
+ */
+
 namespace App\Entity;
 
 use App\Traits\ArchivableEntity;
@@ -640,7 +648,7 @@ class System
      * @param mixed $sysDigitalTransactionsPrYear
      */
     public function setSysDigitalTransactionsPrYear(
-      $sysDigitalTransactionsPrYear
+        $sysDigitalTransactionsPrYear
     ) {
         $this->sysDigitalTransactionsPrYear = $sysDigitalTransactionsPrYear;
     }
@@ -909,5 +917,4 @@ class System
 
         return $this;
     }
-
 }

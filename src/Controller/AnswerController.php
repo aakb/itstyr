@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * This file is part of aakb/itstyr.
+ *
+ * (c) 2018–2019 ITK Development
+ *
+ * This source file is subject to the MIT license.
+ */
+
 namespace App\Controller;
 
 use App\Entity\Answer;
@@ -41,7 +49,8 @@ class AnswerController extends Controller
 
         if (isset($reportId) && isset($systemId)) {
             throw new \Exception(
-                'system and report should be set at the same time', 400
+                'system and report should be set at the same time',
+                400
             );
         }
 

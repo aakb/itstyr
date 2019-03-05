@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * This file is part of aakb/itstyr.
+ *
+ * (c) 2018–2019 ITK Development
+ *
+ * This source file is subject to the MIT license.
+ */
+
 namespace App\Twig;
 
 use Twig\Extension\AbstractExtension;
@@ -9,7 +17,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 
 class AppExtension extends AbstractExtension
 {
-    public function getFunctions() {
+    public function getFunctions()
+    {
         return [
             new TwigFunction('getclass', [$this, 'getClass']),
             new TwigFunction('getanswer', [$this, 'getAnswer']),
@@ -17,7 +26,8 @@ class AppExtension extends AbstractExtension
         ];
     }
 
-    public function getFilters() {
+    public function getFilters()
+    {
         return [
             new TwigFilter('sort_order', [$this, 'sortOrder']),
         ];
@@ -25,18 +35,20 @@ class AppExtension extends AbstractExtension
 
     /**
      * @param $instance
+     *
      * @return bool
      */
     public function getClass($instance)
     {
-        return get_class($instance);
+        return \get_class($instance);
     }
 
-    public function getAnswer($entity, $question) {
+    public function getAnswer($entity, $question)
+    {
         $answers = $entity->getAnswers();
 
         foreach ($answers as $answer) {
-            if ($answer->getQuestion()->getId() == $question->getId()) {
+            if ($answer->getQuestion()->getId() === $question->getId()) {
                 return $answer;
             }
         }
@@ -46,22 +58,26 @@ class AppExtension extends AbstractExtension
 
     /**
      * String split for unicode.
-     * From: http://php.net/manual/en/function.str-split.php#107658
+     * From: http://php.net/manual/en/function.str-split.php#107658.
      *
      * @param $str
      * @param int $l
+     *
      * @return array|array[]|false|string[]
      */
-    private function str_split_unicode($str, $l = 0) {
+    private function strSplitUnicode($str, $l = 0)
+    {
         if ($l > 0) {
             $ret = [];
-            $len = mb_strlen($str, "UTF-8");
+            $len = mb_strlen($str, 'UTF-8');
             for ($i = 0; $i < $len; $i += $l) {
-                $ret[] = mb_substr($str, $i, $l, "UTF-8");
+                $ret[] = mb_substr($str, $i, $l, 'UTF-8');
             }
+
             return $ret;
         }
-        return preg_split("//u", $str, -1, PREG_SPLIT_NO_EMPTY);
+
+        return preg_split('//u', $str, -1, PREG_SPLIT_NO_EMPTY);
     }
 
     /**
@@ -71,39 +87,42 @@ class AppExtension extends AbstractExtension
      * @param $text
      * @param $chuckSize
      * @param $numberOfLines
+     *
      * @return string
      */
     public function breakIntoLines($text, $chuckSize, $numberOfLines)
     {
-        $split = $this->str_split_unicode($text, $chuckSize);
-        $numberOfSplits = count($split);
+        $split = $this->strSplitUnicode($text, $chuckSize);
+        $numberOfSplits = \count($split);
 
         $render = [];
 
         $addedEmptyLines = 0;
-        for ($addedEmptyLines; $addedEmptyLines < $numberOfLines - min($numberOfSplits, $numberOfLines); $addedEmptyLines++) {
+        for ($addedEmptyLines; $addedEmptyLines < $numberOfLines - min($numberOfSplits, $numberOfLines); ++$addedEmptyLines) {
             $render[] = '';
         }
-        for ($i = 0; $i < $numberOfLines - $addedEmptyLines; $i++) {
+        for ($i = 0; $i < $numberOfLines - $addedEmptyLines; ++$i) {
             $render[] = $split[$i];
         }
 
-        $result = implode("<br/>", $render);
+        $result = implode('<br/>', $render);
 
         if ($numberOfSplits > $numberOfLines) {
-            $result .= "...";
+            $result .= '...';
         }
 
         return $result;
     }
 
     /**
-     * Sort by sortOrder
+     * Sort by sortOrder.
      *
      * @param $item
+     *
      * @return \Doctrine\Common\Collections\ArrayCollection
      */
-    public function sortOrder($item){
+    public function sortOrder($item)
+    {
         $iterator = $item->getIterator();
 
         $iterator->uasort(function ($a, $b) {

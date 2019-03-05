@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * This file is part of aakb/itstyr.
+ *
+ * (c) 2018–2019 ITK Development
+ *
+ * This source file is subject to the MIT license.
+ */
+
 namespace App\EventSubscriber;
 
 use App\Entity\System;
@@ -15,10 +23,10 @@ class PostQueryBuilderSubscriber implements EventSubscriberInterface
      */
     public static function getSubscribedEvents()
     {
-        return array(
+        return [
           EasyAdminEvents::POST_LIST_QUERY_BUILDER => ['onPostListQueryBuilder'],
           EasyAdminEvents::POST_SEARCH_QUERY_BUILDER => ['onPostSearchQueryBuilder'],
-        );
+        ];
     }
 
     /**
@@ -55,7 +63,7 @@ class PostQueryBuilderSubscriber implements EventSubscriberInterface
      * @param QueryBuilder $queryBuilder
      * @param array        $filters
      */
-    protected function applyRequestFilters(QueryBuilder $queryBuilder, array $filters = array())
+    protected function applyRequestFilters(QueryBuilder $queryBuilder, array $filters = [])
     {
         // Apply filter on selfServiceAvailableFromItems
         // (cf. https://github.com/alterphp/EasyAdminExtensionBundle/issues/93)
@@ -63,7 +71,7 @@ class PostQueryBuilderSubscriber implements EventSubscriberInterface
         $entities = $queryBuilder->getRootEntities();
         if (1 === \count($entities) && System::class === $entities[0]
           && !empty($filters['selfServiceAvailableFromItems'])) {
-            $ids = (array)$filters['selfServiceAvailableFromItems'];
+            $ids = (array) $filters['selfServiceAvailableFromItems'];
             $alias = $queryBuilder->getRootAliases()[0];
             foreach ($ids as $index => $id) {
                 $parameterName = 'selfServiceAvailableFromItems'.$index;

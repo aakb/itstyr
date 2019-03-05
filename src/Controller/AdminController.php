@@ -1,19 +1,24 @@
 <?php
 
+/*
+ * This file is part of aakb/itstyr.
+ *
+ * (c) 2018–2019 ITK Development
+ *
+ * This source file is subject to the MIT license.
+ */
+
 namespace App\Controller;
 
 use AlterPHP\EasyAdminExtensionBundle\Controller\AdminController as BaseAdminController;
 use App\Repository\CategoryRepository;
-use App\Repository\SystemRepository;
 use App\Repository\ThemeCategoryRepository;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use EasyCorp\Bundle\EasyAdminBundle\Event\EasyAdminEvents;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
 class AdminController extends BaseAdminController
@@ -98,7 +103,7 @@ class AdminController extends BaseAdminController
                 $themes[$theme->getId()] = $theme;
 
                 foreach ($theme->getOrderedCategories() as $category) {
-                  $categories[$category->getId()] = $category;
+                    $categories[$category->getId()] = $category;
                 }
             }
 
@@ -252,14 +257,13 @@ class AdminController extends BaseAdminController
     }
 
     /**
-     * Create filter form
+     * Create filter form.
      *
      * Modified version of: https://github.com/alterphp/EasyAdminExtensionBundle/issues/29
      *
      * @param $filters
      * @param $requestFilters
      * @param $route
-     * @return null
      */
     public function createFilterForm($filters, $requestFilters, $route)
     {
@@ -283,7 +287,7 @@ class AdminController extends BaseAdminController
                         $filter['class'] ?? ucfirst($filter['property'])
                     );
                     if (null === $entityConfig && $filter['class']) {
-                      $entityConfig = ['class' => $filter['class']];
+                        $entityConfig = ['class' => $filter['class']];
                     }
                     $selected = null;
                     if (isset($requestFilters[$filter['property']])) {
@@ -315,7 +319,7 @@ class AdminController extends BaseAdminController
 
                     if (isset($filter['extract_from_property']) &&
                         isset($filter['parent_filter']) &&
-                        (!isset($requestFilters[$filter['parent_filter']]) || $requestFilters[$filter['parent_filter']] == '')) {
+                        (!isset($requestFilters[$filter['parent_filter']]) || '' === $requestFilters[$filter['parent_filter']])) {
                         $disableFilter = true;
                     }
 
@@ -330,13 +334,13 @@ class AdminController extends BaseAdminController
 
                         if (isset($filter['parent_filter']) && !empty($requestFilters[$filter['parent_filter']])) {
                             $builder
-                                ->andWhere('en.'.$filter['parent_filter'] . ' = :parent_filter')
+                                ->andWhere('en.'.$filter['parent_filter'].' = :parent_filter')
                                 ->setParameter('parent_filter', $requestFilters[$filter['parent_filter']]);
                         }
 
                         $query = $builder->getQuery();
 
-                        $results =  $query->getResult();
+                        $results = $query->getResult();
 
                         $choices = [($filter['placeholder'] ?? 'All') => ''];
 
@@ -385,7 +389,9 @@ class AdminController extends BaseAdminController
      * Modified version of: https://github.com/alterphp/EasyAdminExtensionBundle/issues/29
      *
      * @Route("/filter", name="filter")
+     *
      * @param Request $request
+     *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function filterAction(Request $request)
@@ -399,9 +405,9 @@ class AdminController extends BaseAdminController
 
         // Change in group filter, resets all other filters.
         if (isset($params['filters']) && isset($filters['filters']) &&
-            $params['filters']['group'] != $filters['filters']['group']) {
-            foreach($filters['filters'] as $key => $filter) {
-                if ($key != 'group') {
+            $params['filters']['group'] !== $filters['filters']['group']) {
+            foreach ($filters['filters'] as $key => $filter) {
+                if ('group' !== $key) {
                     unset($filters['filters'][$key]);
                 }
             }
@@ -425,7 +431,6 @@ class AdminController extends BaseAdminController
      * From: https://github.com/alterphp/EasyAdminExtensionBundle/issues/29
      *
      * @param $name
-     * @return null
      */
     public function getClassByName($name)
     {
@@ -441,12 +446,14 @@ class AdminController extends BaseAdminController
     }
 
     /**
-     * Get font-awesome icon for $entity
+     * Get font-awesome icon for $entity.
      *
      * @param $entity
+     *
      * @return string
      */
-    private function getIconForEntity($entity) {
+    private function getIconForEntity($entity)
+    {
         switch ($entity) {
             case 'Report':
                 return 'file';

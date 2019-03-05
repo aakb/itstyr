@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * This file is part of aakb/itstyr.
+ *
+ * (c) 2018–2019 ITK Development
+ *
+ * This source file is subject to the MIT license.
+ */
+
 namespace App\Service;
 
 use App\Entity\System;
@@ -16,13 +24,13 @@ class SystemImporter extends BaseImporter
     private $selfServiceAvailableFromItemRepository;
 
     public function __construct(
-      ReportRepository $reportRepository,
-      SystemRepository $systemRepository,
-      GroupRepository $groupRepository,
-      SelfServiceAvailableFromItemRepository $selfServiceAvailableFromItemRepository,
-      EntityManagerInterface $entityManager
+        ReportRepository $reportRepository,
+        SystemRepository $systemRepository,
+        GroupRepository $groupRepository,
+        SelfServiceAvailableFromItemRepository $selfServiceAvailableFromItemRepository,
+        EntityManagerInterface $entityManager
     ) {
-        parent::__construct( $reportRepository, $systemRepository, $groupRepository, $entityManager);
+        parent::__construct($reportRepository, $systemRepository, $groupRepository, $entityManager);
 
         $this->selfServiceAvailableFromItemRepository = $selfServiceAvailableFromItemRepository;
     }
@@ -34,7 +42,7 @@ class SystemImporter extends BaseImporter
         $xml = simplexml_load_file($src);
 
         foreach ($xml->getDocNamespaces() as $strPrefix => $strNamespace) {
-            $strPrefix = "sys";
+            $strPrefix = 'sys';
             $xml->registerXPathNamespace($strPrefix, $strNamespace);
         }
 
@@ -50,7 +58,7 @@ class SystemImporter extends BaseImporter
 
         foreach ($entries as $entry) {
             $entry->registerXPathNamespace('sys', 'http://www.w3.org/2005/Atom');
-            $sysIds[] = (string)$entry->id;
+            $sysIds[] = (string) $entry->id;
 
             $system = $this->systemRepository->findOneBy(['sysId' => $entry->id]);
 
@@ -67,10 +75,10 @@ class SystemImporter extends BaseImporter
             $system->setSysUpdated($this->convertDate($entry->updated));
             $system->setSysTitle($this->sanitizeText($entry->title));
 
-            $properties = $entry->content->children('m', TRUE)->children('d', TRUE);
+            $properties = $entry->content->children('m', true)->children('d', true);
 
             // Set link to Anmeldelsesportalen.
-            $system->setSysLink($systemURL . $this->sanitizeText($properties->Sti) . '/DispForm.aspx?ID=' . $this->sanitizeText($properties->Id));
+            $system->setSysLink($systemURL.$this->sanitizeText($properties->Sti).'/DispForm.aspx?ID='.$this->sanitizeText($properties->Id));
 
             $system->setSysInternalId($this->sanitizeText($properties->Id));
             $system->setSysAlternativeTitle($this->sanitizeText($properties->Kaldenavn));
@@ -103,23 +111,23 @@ class SystemImporter extends BaseImporter
             $sysSystemOwner = '';
             $content = $entry->xpath('sys:link[@title="Systemejer"]//sys:entry/sys:content');
             if (\count($content) > 0) {
-              $systemOwner = $content[0]->children('m', TRUE)->children('d', TRUE);
-              $sysSystemOwner = (string)$systemOwner->Navn;
+                $systemOwner = $content[0]->children('m', true)->children('d', true);
+                $sysSystemOwner = (string) $systemOwner->Navn;
             }
             $system->setSysSystemOwner($sysSystemOwner);
 
             $system->clearSelfServiceAvailableFromItems();
             $selfServiceAvailableFromTitles = $entry->xpath('sys:link[@title="SelvbetjeningTilgængeligFra"]//sys:entry/sys:title');
             if ($selfServiceAvailableFromTitles) {
-              foreach ($selfServiceAvailableFromTitles as $title) {
-                $name = (string)$title;
-                $item = $this->selfServiceAvailableFromItemRepository->getItem($name);
-                $system->addSelfServiceAvailableFromItem($item);
-              }
+                foreach ($selfServiceAvailableFromTitles as $title) {
+                    $name = (string) $title;
+                    $item = $this->selfServiceAvailableFromItemRepository->getItem($name);
+                    $system->addSelfServiceAvailableFromItem($item);
+                }
             }
 
             // Set group and subGroup.
-            if (!is_null($system->getSysOwner())) {
+            if (null !== $system->getSysOwner()) {
                 $e = $system->getSysOwner();
                 $e = str_replace('–', '-', $e);
                 $extract = explode('-', $e, 2);
@@ -131,7 +139,7 @@ class SystemImporter extends BaseImporter
                     ['name' => $groupName]
                 );
 
-                if ($findGroup && is_null($system->getGroup())) {
+                if ($findGroup && null === $system->getGroup()) {
                     $system->setGroup($findGroup);
                 }
 
@@ -139,7 +147,7 @@ class SystemImporter extends BaseImporter
                     $system->setSysOwnerSub($subGroupName);
                 }
             }
-        };
+        }
 
         // Archive systems that no longer exist in Systemoversigten.
         $this->systemRepository->createQueryBuilder('e')

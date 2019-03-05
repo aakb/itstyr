@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * This file is part of aakb/itstyr.
+ *
+ * (c) 2018–2019 ITK Development
+ *
+ * This source file is subject to the MIT license.
+ */
+
 namespace App\Entity;
 
 use FOS\UserBundle\Model\Group as BaseGroup;
@@ -30,7 +38,7 @@ class Group extends BaseGroup
 
     public function __construct()
     {
-        parent::__construct(NULL, ['ROLE_USER']);
+        parent::__construct(null, ['ROLE_USER']);
     }
 
     public function __toString()
