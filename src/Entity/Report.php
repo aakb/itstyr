@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiResource;
 use App\Traits\ArchivableEntity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -11,6 +12,10 @@ use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
+ * @ApiResource(
+ *     collectionOperations={"GET"},
+ *     itemOperations={"GET"}
+ * )
  * @ORM\Entity(repositoryClass="App\Repository\ReportRepository")
  * @Gedmo\Loggable
  */

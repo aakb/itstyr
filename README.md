@@ -68,3 +68,11 @@ https://symfony.com/doc/current/setup/web_server_configuration.html
 bin/console itstyr:import:system PATH
 bin/console itstyr:import:report PATH
 ```
+
+## API
+
+Edit a user to set API token. Use the token to access API, e.g.
+
+```sh
+curl --silent --header 'x-auth-token: «api token» http://itstyr.docker.localhost/api
+```

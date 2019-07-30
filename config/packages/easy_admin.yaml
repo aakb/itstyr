@@ -358,6 +358,7 @@ easy_admin:
                     - { property: 'sys_total_transactions_pr_year', label: 'entity.system.sys_total_transactions_pr_year', type: 'text', type_options: { required: false, disabled: disabled } }
                     - { property: 'sys_self_service_url', label: 'entity.system.sys_self_service_url', type: 'text', type_options: { required: false, disabled: disabled } }
                     - { property: 'sys_version', label: 'entity.system.sys_version', type: 'text', type_options: { required: false, disabled: disabled } }
+
         User:
             class: App\Entity\User
             list:
@@ -375,6 +376,7 @@ easy_admin:
                     - enabled
                     - lastLogin
                     - roles
+                    - apiToken
             form:
                 role: ROLE_ADMIN
                 fields:
@@ -382,10 +384,11 @@ easy_admin:
                     - email
                     - groups
                     - enabled
-                    - lastLogin
                     # if administrators are allowed to edit users' passwords and roles, add this:
-                    - { property: 'plainPassword', type: 'text', type_options: { required: false } }
+                    - { property: 'plainPassword', type: 'text', type_options: { required: true } }
                     - { property: 'roles', type: 'choice', type_options: { multiple: true, choices: { 'ROLE_USER': 'ROLE_USER', 'ROLE_ADMIN': 'ROLE_ADMIN' } } }
+                    - apiToken
+
         Group:
             class: App\Entity\Group
             list:

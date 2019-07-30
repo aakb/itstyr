@@ -32,8 +32,33 @@ class User extends BaseUser
      */
     protected $groups;
 
+    /**
+     * @ORM\Column(type="string", nullable=true, unique=true)
+     */
+    private $apiToken;
+
     public function __construct()
     {
         parent::__construct();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getApiToken()
+    {
+        return $this->apiToken ?? sha1(random_bytes(10));
+    }
+
+    /**
+     * @param mixed $apiToken
+     *
+     * @return User
+     */
+    public function setApiToken($apiToken)
+    {
+        $this->apiToken = $apiToken;
+
+        return $this;
     }
 }
