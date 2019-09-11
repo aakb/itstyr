@@ -2,3 +2,15 @@ easy_admin_bundle:
     resource: 'App\Controller\AdminController'
     prefix: /
     type: annotation
+#easy_admin_bundle:
+#    resource: '@EasyAdminBundle/Controller/EasyAdminController.php'
+#    prefix: /
+#    type: annotation
+#easy_admin_bundle:
+#    resource: '@EasyAdminExtensionBundle/Controller/EasyAdminController.php'
+#    type:     annotation
+#    prefix:   /
+#easy_admin_bundle:
+#    resource: '@EasyAdminBundle/Controller/EasyAdminController.php'
+#    prefix: /
+#    type: annotation

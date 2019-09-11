@@ -12,21 +12,19 @@ easy_admin:
         brand_color: '#2A3CA2'
         templates:
             label_null: 'easy_admin_overrides/label_null.html.twig'
-            show: 'easy_admin_overrides/show.html.twig'
-            list: 'easy_admin_overrides/list.html.twig'
-            menu: 'easy_admin_overrides/menu.html.twig'
+#            show: 'easy_admin_overrides/show.html.twig'
+#            list: 'easy_admin_overrides/list.html.twig'
+#            menu: 'easy_admin_overrides/menu.html.twig'
         menu:
             - { label: 'menu.dashboards' }
-            - { entity: 'Report', label: 'menu.dashboard.reports', action: 'dashboard' }
-            - { entity: 'System', label: 'menu.dashboard.systems', action: 'dashboard' }
-            - { label: 'menu.separator' }
-            - { label: 'menu.separator' }
+#            - { label: 'menu.dashboard.report', icon: 'file-excel-o', route: 'dash_report' }
+#            - { label: 'menu.dashboard.system', icon: 'file-excel-o', route: 'dash_report' }
+            - { entity: 'Report', label: 'menu.dashboard.reports', params: { action: 'dashboard' } }
+            - { entity: 'System', label: 'menu.dashboard.systems', params: { action: 'dashboard' } }
             - { label: 'menu.sysstatus' }
             - { entity: 'Report', icon: 'file', label: 'menu.reports', default: true }
             - { entity: 'System', icon: 'cogs', label: 'menu.systems' }
             - { entity: 'Note', icon: 'edit', label: 'menu.notes' }
-            - { label: 'menu.separator' }
-            - { label: 'menu.separator' }
             - { label: 'menu.admin' }
             - { entity: 'User', icon: 'user', label: 'menu.users' }
             - { entity: 'Group', icon: 'users', label: 'menu.groups' }
@@ -68,8 +66,10 @@ easy_admin:
                     - { property: 'name', label: 'entity.theme.name' }
                     - { property: 'systems', label: 'entity.theme.systems' }
                     - { property: 'reports', label: 'entity.theme.reports' }
-                    - { type: group, label: 'entity.theme.theme_categories', css_class: 'col-sm-12', icon: list }
-                    - { property: 'theme_categories', label: 'entity.theme.theme_categories', type: embedded_list, type_options: { filters: { 'entity.theme': 'form:parent.data.id' } } }
+# @TODO: Add link to where theme categories for the given Theme can be set.
+#                    - { type: group, label: 'entity.theme.theme_categories', css_class: 'col-sm-12', icon: list }
+#                    - { property: 'theme_categories', label: 'entity.theme.theme_categories', type: list }
+#                    - { property: 'theme_categories', label: 'entity.theme.theme_categories', type: embedded_list, type_options: { entity: Theme, filters: { 'entity.theme': 'form:parent.data.id' } } }
         Category:
             class: App\Entity\Category
             list:

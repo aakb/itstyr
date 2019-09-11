@@ -1,5 +1,11 @@
+/* public/css/admin.css */
+:root {
+  /* make the backend contents as wide as the browser window */
+  --body-max-width: 100%;
+}
+
 .wrapper {
-  overflow: auto;
+  overflow: hidden;
 }
 
 .header-icon {
@@ -71,13 +77,13 @@
 }
 
 th.rotate {
-  height: 200px;
+  height: 180px;
   white-space: nowrap;
 }
 
 th.rotate > div {
-  transform: translate(0px, -13px) rotate(315deg);
-  max-width: 80px;
+  transform: translate(-10px, -15px) rotate(320deg);
+  max-width: 70px;
   max-height: 100px;
 }
 
@@ -152,4 +158,26 @@ body.list table tbody td.dashboard--table-answer {
 .export-section {
   margin-top: 2em;
   margin-bottom: 2em;
+}
+
+.sticky {
+  position: fixed;
+  top: 0;
+  background-color: #fff;
+}
+
+.left-table-column,
+.left-table-column {
+  min-width: 500px;
+  max-width: 500px;
+}
+
+.result-table-column {
+  min-width: 80px;
+  max-width: 80px;
+}
+
+.dashboard--table-answer {
+  display: flex;
+  justify-content: center;
 }

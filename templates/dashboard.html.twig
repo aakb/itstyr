@@ -1,0 +1,95 @@
+{% extends '@EasyAdmin/default/list.html.twig' %}
+
+{% block main %}
+  {% set _list_item_actions = easyadmin_get_actions_for_list_item(_entity_config.name) %}
+
+  <div style="overflow-x: scroll">
+    {% set results = paginator.currentPageResults() %}
+
+    <div id="stickTop" style="display: none; height: 178px;"></div>
+    <table class="table table-bordered table-responsive table-sm">
+      <thead id="stickyHeader">
+      <th class="left-table-column"></th>
+      {% for item in results %}
+        <th class="rotate result-table-column">
+          <div>
+          <span>
+            <a href="{{ path('easyadmin', _request_parameters|merge({ action: 'show', id: item.id })) }}"
+               title="{{ item.showableName }}">
+            {{ breakintolines(item.showableName, 28, 2) | raw }}
+            </a>
+          </span>
+          </div>
+        </th>
+      {% endfor %}
+      </thead>
+      <tbody>
+      {% for category in categories %}
+        <tr>
+          <td class="left-table-column"><h3><strong>{{ category.name }}</strong></h3></td>
+          {% for result in results %}
+            <td class="result-table-column"> </td>
+          {% endfor %}
+        </tr>
+        {% for question in (category.questions)|sort_order %}
+          <tr>
+            <td class="left-table-column">{{ question.question }}</td>
+            {% for result in results %}
+              <td class="result-table-column">
+                <div class="dashboard--table-answer">
+                  {% set answer = getanswer(result, question) %}
+                  {% if answer is not null %}
+                    {% include 'easy_admin_overrides/field_smiley.html.twig' with { 'value': answer.smiley, 'title': answer.note, 'width': 30 } %}
+                  {% endif %}
+                </div>
+              </td>
+            {% endfor %}
+          </tr>
+        {% endfor %}
+      {% endfor %}
+      </tbody>
+    </table>
+
+    {% if results|length == 0 %}
+      <tr>
+        <td class="no-results"
+            colspan="{{ _list_item_actions|length > 0 ? fields|length + 1 : fields|length }}">
+          {{ 'search.no_results'|trans(_trans_parameters, 'EasyAdminBundle') }}
+        </td>
+      </tr>
+    {% endif %}
+  </div>
+
+  {% block paginator %}
+    {{ include(_entity_config.templates.paginator) }}
+  {% endblock paginator %}
+
+  {% block delete_form %}
+  {% endblock delete_form %}
+{% endblock main %}
+
+{% block body_javascript %}
+  <script type="text/javascript">
+    // When the user scrolls the page, execute makeSticky.
+    window.onscroll = function() {makeSticky()};
+
+    // Get the header
+    var header = document.getElementById("stickyHeader");
+    var stickTop = document.getElementById("stickTop");
+
+    // Get the offset position of the where the stickiness should trigger.
+    var sticky = header.offsetTop + 180;
+
+    // Add the sticky class to the header when you reach its scroll position.
+    // Remove "sticky" when you leave the scroll position
+    function makeSticky() {
+      if (window.pageYOffset > sticky) {
+        header.classList.add("sticky");
+        $(stickTop).show();
+      } else {
+        header.classList.remove("sticky");
+        $(stickTop).hide();
+      }
+    }
+  </script>
+{% endblock %}
