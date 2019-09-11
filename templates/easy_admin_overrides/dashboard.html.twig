@@ -47,74 +47,79 @@
 {% block main %}
   {% set _list_item_actions = easyadmin_get_actions_for_list_item(_entity_config.name) %}
 
-<div class="table-responsive dashboard--table table-sm">
-  {% set results = paginator.currentPageResults() %}
+  <div class="table-responsive dashboard--table table-sm">
+    {% set results = paginator.currentPageResults() %}
 
-  <table class="table table-bordered">
-    <thead class="">
-    <th></th>
-    {% for item in results %}
-      <th class="rotate">
-        <div>
+    <div id="stickTop" style="display: none; height: 180px;"></div>
+
+    <table class="table table-bordered">
+      <thead id="stickyHeader">
+      <th></th>
+      {% for item in results %}
+        <th class="rotate">
+          <div>
           <span>
             <a href="{{ path('easyadmin', _request_parameters|merge({ action: 'show', id: item.id })) }}"
-                title="{{ item.showableName }}">
+               title="{{ item.showableName }}">
             {{ breakintolines(item.showableName, 28, 2) | raw }}
             </a>
           </span>
-        </div>
-      </th>
-    {% endfor %}
+          </div>
+        </th>
+      {% endfor %}
       <th></th>
-    </thead>
-    <tbody>
-    {% for category in categories %}
-      <tr>
-        <td><h3><strong>{{ category.name }}</strong></h3></td>
-        {% for result in results %}
-        <td></td>
-        {% endfor %}
-        <td></td>
-      </tr>
-      {% for question in (category.questions)|sort_order %}
+      </thead>
+      <tbody>
+      {% for category in categories %}
         <tr>
-          <td>{{ question.question }}</td>
+          <td><h3><strong>{{ category.name }}</strong></h3></td>
           {% for result in results %}
-            <td class="dashboard--table-answer">
-              {% set answer = getanswer(result, question) %}
-              {% if answer is not null %}
-                {% include 'easy_admin_overrides/field_smiley.html.twig' with { 'value': answer.smiley, 'title': answer.note, 'width': 30 } %}
-              {% endif %}
-            </td>
+            <td></td>
           {% endfor %}
           <td></td>
         </tr>
+        {% for question in (category.questions)|sort_order %}
+          <tr>
+            <td>{{ question.question }}</td>
+            {% for result in results %}
+              <td>
+                <div class="dashboard--table-answer">
+                  {% set answer = getanswer(result, question) %}
+                  {% if answer is not null %}
+                    {% include 'easy_admin_overrides/field_smiley.html.twig' with { 'value': answer.smiley, 'title': answer.note, 'width': 30 } %}
+                  {% endif %}
+                </div>
+              </td>
+            {% endfor %}
+            <td></td>
+          </tr>
+        {% endfor %}
+        {% if not loop.last %}
+          <tr>
+            <td class="dashboard--table-spacing"
+                colspan="{{ (results|length) + 2 }}">&nbsp;
+            </td>
+          </tr>
+        {% endif %}
       {% endfor %}
-      {% if not loop.last %}
-      <tr>
-        <td class="dashboard--table-spacing"
-            colspan="{{ (results|length) + 2 }}">&nbsp;</td>
-      </tr>
-      {% endif %}
-    {% endfor %}
 
-    {% if categories|length == 0 %}
+      {% if categories|length == 0 %}
+        <tr>
+          <td colspan="{{ (results|length) + 2 }}">{{ 'dashboard.no_categories_for_result' | trans }}</td>
+        </tr>
+      {% endif %}
+      </tbody>
+    </table>
+
+    {% if results|length == 0 %}
       <tr>
-        <td colspan="{{ (results|length) + 2 }}">{{ 'dashboard.no_categories_for_result' | trans }}</td>
+        <td class="no-results"
+            colspan="{{ _list_item_actions|length > 0 ? fields|length + 1 : fields|length }}">
+          {{ 'search.no_results'|trans(_trans_parameters, 'EasyAdminBundle') }}
+        </td>
       </tr>
     {% endif %}
-    </tbody>
-  </table>
-
-  {% if results|length == 0 %}
-    <tr>
-      <td class="no-results"
-          colspan="{{ _list_item_actions|length > 0 ? fields|length + 1 : fields|length }}">
-        {{ 'search.no_results'|trans(_trans_parameters, 'EasyAdminBundle') }}
-      </td>
-    </tr>
-  {% endif %}
-</div>
+  </div>
 
   {% block paginator %}
     {{ include(_entity_config.templates.paginator) }}
@@ -124,3 +129,57 @@
   {% endblock delete_form %}
 
 {% endblock main %}
+
+{% block body_javascript %}
+  {{ parent() }}
+
+  <script type="text/javascript">
+    // Get the header
+    var header = document.getElementById('stickyHeader');
+    var stickTop = document.getElementById('stickTop');
+    // Get the offset position of the where the stickiness should trigger.
+    var sticky = 118;
+
+    // Affix table header when this reaches upper browser edge.
+    $('table thead').affix({
+      offset: sticky
+    });
+
+    // Set fixed thead and th widths.
+    function makeSticky () {
+      // Explicitly set widths of elements.
+      $('table thead').each(function () {
+        $(this).width($(this).width());
+      });
+      $('table thead th').each(function () {
+        $(this).width($(this).width());
+      });
+      $('table tbody td').each(function () {
+        $(this).width($(this).width());
+      });
+
+      if (window.pageYOffset > sticky) {
+        $(stickTop).show();
+      }
+      else {
+        $(stickTop).hide();
+      }
+    }
+
+    $(window).bind('scroll', makeSticky);
+
+    var timerResize;
+    $(window).bind('resize', function () {
+      clearTimeout(timerResize);
+      timerResize = setTimeout(resizeEnd, 150);
+    });
+
+    var resizeEnd = function () {
+      $('html').animate({scrollTop: 0}, 500, 'swing', function () {
+        makeSticky();
+      });
+    };
+
+    makeSticky();
+  </script>
+{% endblock %}
